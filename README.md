@@ -8,9 +8,9 @@ This project implements a **complete order tracking system using Python**, built
 - **Machine Learning** (for fraud detection)
 - **AWS Lambda + SNS** (for notifications)
 
-All code is included below in this README file.
-
 ---
+<img width="1440" alt="Screenshot 2025-05-06 at 5 12 34 AM" src="https://github.com/user-attachments/assets/6e2428bb-7286-452a-be75-d0fa3a6b7208" />
+
 
 ## 1. Prerequisites
 
@@ -26,6 +26,8 @@ pip install flask boto3 redis scikit-learn joblib
 ```
 
 ---
+
+
 
 ## 2. AWS Configuration
 
@@ -58,6 +60,7 @@ Ensure your IAM user has the following AWS managed policies:
 ```bash
 aws dynamodb create-table   --table-name Orders   --attribute-definitions AttributeName=id,AttributeType=S   --key-schema AttributeName=id,KeyType=HASH   --billing-mode PAY_PER_REQUEST
 ```
+<img width="1440" alt="Screenshot 2025-05-06 at 5 12 06 AM" src="https://github.com/user-attachments/assets/ec788626-3970-431e-97e6-a4356db545d2" />
 
 ---
 
