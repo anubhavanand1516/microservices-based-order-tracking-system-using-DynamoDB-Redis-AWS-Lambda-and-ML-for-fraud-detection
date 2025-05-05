@@ -1,6 +1,6 @@
-# Python Microservices-Based Order Tracking System (All-in-One)
+# Microservices-Based Order Tracking System 
 
-This project implements a **complete order tracking system using Python**, built on microservices architecture. It integrates:
+This project implements a **complete order tracking system using Python**, built on a microservices architecture. It integrates:
 
 - **Flask** APIs
 - **DynamoDB** (for orders)
@@ -73,31 +73,6 @@ docker run -d --name redis -p 6379:6379 redis
 
 ### 5.1 Order Service (Port 5000)
 
-```python
-from flask import Flask, request, jsonify
-import boto3, uuid
-
-app = Flask(__name__)
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('Orders')
-
-@app.route('/order', methods=['POST'])
-def create_order():
-    data = request.json
-    order_id = str(uuid.uuid4())
-    item = data['item']
-    order = {'id': order_id, 'item': item, 'status': 'placed'}
-    table.put_item(Item=order)
-    return jsonify(order)
-
-@app.route('/order/<order_id>', methods=['GET'])
-def get_order(order_id):
-    response = table.get_item(Key={'id': order_id})
-    return jsonify(response.get('Item', {}))
-
-app.run(port=5000)
-```
-
 **Run:**
 
 ```bash
@@ -113,27 +88,6 @@ curl -X POST http://localhost:5000/order -H "Content-Type: application/json" -d 
 ---
 
 ### 5.2 Tracking Service (Port 5001)
-
-```python
-from flask import Flask, request, jsonify
-import redis
-
-app = Flask(__name__)
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
-
-@app.route('/track', methods=['POST'])
-def update_status():
-    data = request.json
-    r.set(data['id'], data['status'])
-    return jsonify({'message': 'Status updated'})
-
-@app.route('/track/<order_id>', methods=['GET'])
-def get_status(order_id):
-    status = r.get(order_id)
-    return jsonify({'id': order_id, 'status': status})
-
-app.run(port=5001)
-```
 
 **Run:**
 
@@ -152,35 +106,7 @@ curl http://localhost:5001/track/uuid-1
 
 ### 5.3 Fraud Detection Service (Port 5002)
 
-#### Create Model
-
-```python
-from sklearn.ensemble import RandomForestClassifier
-import joblib
-
-X = [[0, 1], [1, 0], [0, 0], [1, 1]]
-y = [0, 1, 0, 1]
-model = RandomForestClassifier().fit(X, y)
-joblib.dump(model, 'fraud_model.pkl')
-```
-
 #### Run API
-
-```python
-from flask import Flask, request, jsonify
-import joblib
-
-app = Flask(__name__)
-model = joblib.load('fraud_model.pkl')
-
-@app.route('/check', methods=['POST'])
-def check_fraud():
-    features = request.json['features']
-    prediction = model.predict([features])[0]
-    return jsonify({'fraud': bool(prediction)})
-
-app.run(port=5002)
-```
 
 **Run:**
 
@@ -198,24 +124,6 @@ curl -X POST http://localhost:5002/check -H "Content-Type: application/json" -d 
 ---
 
 ### 5.4 Notification Service (AWS Lambda + SNS)
-
-#### Lambda Code
-
-```python
-import json
-import boto3
-
-sns = boto3.client('sns')
-
-def lambda_handler(event, context):
-    record = event['Records'][0]
-    message = json.loads(record['Sns']['Message'])
-    sns.publish(
-        TopicArn='YOUR_TOPIC_ARN',
-        Message=f"Order {message['id']} status is {message['status']}"
-    )
-    return {'statusCode': 200, 'body': 'Notification sent'}
-```
 
 **Deploy:**
 
@@ -257,15 +165,3 @@ Replace `YOUR_TOPIC_ARN` and `YOUR_IAM_ROLE_ARN`.
   "fraud": true
 }
 ```
-
----
-
-## 7. License
-
-MIT License
-
----
-
-## 8. Author
-
-Built by [Your Name]
