@@ -72,7 +72,7 @@ docker run -d --name redis -p 6379:6379 redis
 
 ---
 
-## 5. Microservices (Code Included Below)
+## 5. Microservices 
 
 ### 5.1 Order Service (Port 5000)
 
